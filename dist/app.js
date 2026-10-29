@@ -92,7 +92,7 @@ function openModal(title, html, className='') {
   requestAnimationFrame(()=>{ const el=$('[autofocus]',body); if(el) el.focus(); });
 }
 function closeModal(){modal.close();}
-modal.addEventListener('close',()=>{document.body.classList.remove('modal-open');lastFocusedElement?.focus();});
+modal.addEventListener('close',()=>{document.body.classList.remove('modal-open');lastFocusedElement?.focus({preventScroll:true});});
 modal.addEventListener('click',(event)=>{if(event.target===modal) {const r=modal.getBoundingClientRect(); if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeModal();}});
 $('.modal-close').addEventListener('click',closeModal);
 
@@ -107,6 +107,15 @@ function syncProfile() {
 }
 function renderCategories() {
   $('#categoryGrid').innerHTML=categories.map(c=>{const count=services.filter(s=>s.category===c.id).length;const countLabel=`${count} ${count%100>=11&&count%100<=14?'услуг':count%10===1?'услуга':count%10>=2&&count%10<=4?'услуги':'услуг'}`;return c.id==='dating'?`<button class="category-button category-dating ${currentCategory===c.id?'active':''}" data-category="${c.id}" aria-pressed="${currentCategory===c.id}"><span class="category-icon icon-pink">${icon(c.icon)}</span><span class="category-dating-copy"><span class="category-dating-label">СКУФКВОТА ОТКРЫТА</span><span class="category-title">${c.title}</span><span class="category-count">${countLabel} · От знакомства до общего плейлиста</span></span><span class="category-dating-badge">По взаимной симпатии</span><span class="category-dating-arrow" aria-hidden="true">↗</span></button>`:`<button class="category-button ${currentCategory===c.id?'active':''}" data-category="${c.id}" aria-pressed="${currentCategory===c.id}"><span class="category-icon icon-${c.color}">${icon(c.icon)}</span><span class="category-title">${c.title}</span><span class="category-count">${countLabel} <span aria-hidden="true">↗</span></span></button>`;}).join('');
+}
+function showAllCategories(){
+  const items=categories.map(c=>{
+    const list=services.filter(s=>s.category===c.id);
+    const count=list.length;
+    const countLabel=`${count} ${count%100>=11&&count%100<=14?'услуг':count%10===1?'услуга':count%10>=2&&count%10<=4?'услуги':'услуг'}`;
+    return `<button class="category-picker-item" data-category="${c.id}"><span class="category-picker-icon icon-${c.color}">${icon(c.icon)}</span><span class="category-picker-copy"><strong>${escapeHtml(c.title)}</strong><small>${countLabel}</small><span>${list.slice(0,2).map(s=>escapeHtml(s.title)).join(' · ')}</span></span><span class="category-picker-arrow" aria-hidden="true">→</span></button>`;
+  }).join('');
+  openModal('Все категории',`<p class="category-picker-intro">Выберите, какой вопрос порешаем. В ${categories.length} категориях — ${services.length} услуг.</p><div class="category-picker-list">${items}</div><button class="text-link category-picker-all-services" data-action="browse">Все услуги одним списком <span aria-hidden="true">→</span></button>`,'category-picker-modal');
 }
 function matchingServices(query) {
   const words = query.trim().toLocaleLowerCase('ru').replace(/ё/g,'е').split(/\s+/).filter(Boolean);
@@ -124,7 +133,7 @@ function renderServices() {
 }
 function renderNews(){ $('#newsGrid').innerHTML=news.map((n,i)=>`<button class="news-card" data-news="${i}"><span class="news-visual news-v${i+1}"><span class="news-visual-label">${n.label}</span><span class="news-illustration" aria-hidden="true">${n.emoji}</span><span class="news-visual-circle" aria-hidden="true"></span></span><span class="news-body"><span class="news-date">${n.date}</span><h3>${n.title}</h3><span>${n.description}</span><span class="news-read">Читать <span aria-hidden="true">→</span></span></span></button>`).join(''); }
 function resetSearch(){currentQuery='';currentCategory='all';currentFilter='all';$('#serviceSearch').value='';renderCategories();renderServices();}
-function goToCatalog(){closeModal();$('#catalog').scrollIntoView({behavior:'smooth',block:'start'});}
+function goToCatalog(){if(modal.open){const heading=$('#catalogHeading');heading.setAttribute('tabindex','-1');lastFocusedElement=heading;}closeModal();$('#catalog').scrollIntoView({behavior:'smooth',block:'start'});}
 $('#searchForm').addEventListener('submit',(event)=>{event.preventDefault();showChat($('#serviceSearch').value.trim());});
 
 function showProfile() {
@@ -224,7 +233,7 @@ document.addEventListener('submit',(event)=>{
 document.addEventListener('input',event=>{if(event.target.matches('#profileName, #appName'))event.target.setCustomValidity('');});
 document.addEventListener('click',(event)=>{
   const target=event.target.closest('button');if(!target)return;
-  if(target.dataset.category){currentCategory=modal.classList.contains('palych-modal')?target.dataset.category:currentCategory===target.dataset.category?'all':target.dataset.category;currentFilter='all';renderCategories();renderServices();goToCatalog();}
+  if(target.dataset.category){const explicitChoice=!!target.closest('.category-picker-list, .palych-modal');currentCategory=explicitChoice?target.dataset.category:currentCategory===target.dataset.category?'all':target.dataset.category;if(explicitChoice){currentQuery='';$('#serviceSearch').value='';}currentFilter='all';renderCategories();renderServices();goToCatalog();}
   if(target.dataset.filter){currentFilter=target.dataset.filter;renderServices();}
   if(target.dataset.service){const fromPalych=modal.classList.contains('palych-modal');showService(target.dataset.service);if(fromPalych&&target.dataset.service!=='certificate')body.insertAdjacentHTML('afterbegin','<button class="text-link palych-return" data-action="chat">← К разговору с Палычем</button>');}
   if(target.dataset.search){$('#serviceSearch').value=target.dataset.search;showChat(target.dataset.search);}
@@ -239,6 +248,7 @@ document.addEventListener('click',(event)=>{
     case 'quiz-back':quizAnswers.pop();showQuizQuestion();break;
     case 'download-certificate':downloadCertificate();break;
     case 'all-services':case 'browse':resetSearch();goToCatalog();break;
+    case 'all-categories':showAllCategories();break;
     case 'reset-search':resetSearch();break;
     case 'chat':showChat();break;
     case 'palych-reset':palychConversation=[];renderPalychConversation();$('#chatInput').value='';$('#chatInput').focus();break;

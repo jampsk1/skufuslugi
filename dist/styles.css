@@ -864,3 +864,27 @@ main { padding-bottom: 64px; }
   .category-dating .category-count { font-size: 11px; line-height: 1.7; }
   .category-dating-arrow { width: 27px; height: 27px; font-size: 17px; }
 }
+
+.modal.category-picker-modal { width: 760px; }
+.category-picker-modal .category-picker-intro { color: #7c8ba3; font-size: 13px; }
+.category-picker-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.category-picker-item { display: flex; align-items: flex-start; gap: 13px; min-width: 0; padding: 17px; border: 1px solid #e1e8f3; border-radius: 13px; background: #fbfcff; text-align: left; }
+.category-picker-item:hover { border-color: #a8c4f3; background: #f0f5ff; }
+.category-picker-item[data-category="dating"] { grid-column: 1 / -1; background: #f8f3ff; border-color: #e8dbf7; }
+.category-picker-item[data-category="dating"]:hover { background: #f0e6ff; border-color: #c6a5e7; }
+.category-picker-icon { display: flex; justify-content: center; align-items: center; width: 37px; height: 37px; flex-shrink: 0; border-radius: 10px; background: #fff; }
+.category-picker-icon.icon-pink { color: #9561c6; }
+.category-picker-icon svg { width: 26px; height: 26px; }
+.category-picker-copy { display: block; min-width: 0; flex: 1; }
+.category-picker-copy strong { display: block; color: #233758; font-size: 14px; line-height: 1.6; font-weight: 800; }
+.category-picker-copy small { display: block; margin-top: 1px; color: #6d87b0; font-size: 11px; }
+.category-picker-copy > span { display: block; margin-top: 7px; color: #8d98ac; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.category-picker-arrow { flex-shrink: 0; padding-top: 4px; color: var(--blue); font-size: 16px; }
+.category-picker-all-services { margin-top: 19px; font-size: 12px; }
+@media (max-width: 540px) {
+  .category-picker-list { grid-template-columns: 1fr; gap: 10px; }
+  .category-picker-item { padding: 15px; }
+  .category-picker-copy strong { font-size: 14px; }
+  .category-picker-copy > span { font-size: 12px; }
+  .category-picker-all-services { min-height: 42px; font-size: 12px; }
+}
