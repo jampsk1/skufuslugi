@@ -18,9 +18,11 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="palych.css">
   <link rel="stylesheet" href="hero-carousel.css">
+  <link rel="stylesheet" href="palych-speech.css">
   <script src="palych.js" defer></script>
   <script src="app.js" defer></script>
   <script src="hero-carousel.js" defer></script>
+  <script src="palych-speech.js" defer></script>
 </head>
 <body>
   <a class="skip-link sr-only" href="#catalog">Перейти к услугам</a>
@@ -66,7 +68,14 @@
     <section class="faq-section" aria-labelledby="faqHeading"><div class="section-heading"><h2 id="faqHeading">Есть вопросики?</h2><span class="section-caption">Сейчас всё объясним</span></div><div class="faq-list"><details><summary>Кто вообще может стать скуфом?<span aria-hidden="true">+</span></summary><p>Любой, кто ценит комфорт, умеет отдыхать и хоть раз говорил «дома лучше». Возраст, пол и наличие гаража значения не имеют. Пройдите тест — диванная комиссия разберётся.</p></details><details><summary>Здесь правда можно получить документы?<span aria-hidden="true">+</span></summary><p>Можно получить шуточное удостоверение скуфа и подать мемное заявление. Скуфуслуги — развлекательный проект. Наши документы имеют исключительно диванную силу.</p></details><details><summary>Сколько стоят услуги?<span aria-hidden="true">+</span></summary><p>Ноль рублей и немного вашего свободного времени. Все услуги бесплатные. Чай, печеньки и носки с сандалиями приобретаются по желанию.</p></details><details><summary>Где хранятся мои заявления?<span aria-hidden="true">+</span></summary><p>В этом браузере, на вашем устройстве. После подачи они появятся в разделе «Заявления». При очистке данных браузера история исчезнет. Настоящие паспортные данные нам не нужны — достаточно имени или прозвища.</p></details></div></section>
   </main>
   <footer class="site-footer"><div class="container"><div class="footer-top"><div class="footer-brand"><a class="brand-name" href="#"><span class="brand-blue">скуф</span><span class="brand-red">услуги</span></a><p>Государство души.<br>Территория комфорта.</p></div><div class="footer-links"><button data-action="about">О портале</button><button data-action="privacy">Ваши данные</button><button data-action="chat">Служба скуфподдержки</button><span>Работаем с перекурами, 24/7</span></div><div class="footer-rest"><span aria-hidden="true">🛋️</span><span>Вы заслужили<br><strong>немного полежать.</strong></span></div></div><div class="footer-bottom"><span>© 2026 Скуфуслуги · Сделано без лишних движений</span><span>Мемный проект. Не связан с Госуслугами и государственными органами.</span></div></div></footer>
-  <button class="assistant-button" data-action="chat" aria-label="Открыть робота Палыча"><span class="assistant-avatar palych-avatar-mini" data-palych-avatar aria-hidden="true"></span><span>Робот Палыч</span><span class="assistant-online" aria-hidden="true"></span></button>
+  <div class="palych-companion" id="palychCompanion">
+    <aside class="palych-speech" id="palychSpeech" hidden aria-label="Реплики Палыча">
+      <button class="palych-speech-action" id="palychSpeechAction" data-action="chat" data-palych-prompt="Хочу альтушку"><span class="palych-speech-kicker">ПАЛЫЧ НА СВЯЗИ</span><span class="palych-speech-text" id="palychSpeechText">Я нашёл себе рыжую альтушку, найду и тебе.</span><span class="palych-speech-invite">Порешаем? <span aria-hidden="true">↗</span></span></button>
+      <button class="palych-speech-close" id="palychSpeechClose" type="button" aria-label="Скрыть реплики Палыча">×</button>
+      <button class="palych-speech-next" id="palychSpeechNext" type="button" aria-label="Другая реплика Палыча">↻</button>
+    </aside>
+    <button class="assistant-button" data-action="chat" aria-label="Открыть робота Палыча"><span class="assistant-avatar palych-avatar-mini" data-palych-avatar aria-hidden="true"></span><span>Робот Палыч</span><span class="assistant-online" aria-hidden="true"></span></button>
+  </div>
   <dialog class="modal" id="mainModal" aria-labelledby="modalTitle"><div class="modal-header"><h2 id="modalTitle"></h2><button class="icon-button modal-close" aria-label="Закрыть окно">✕</button></div><div class="modal-body" id="modalBody"></div></dialog>
   <div class="toast" role="status" id="toast" hidden></div>
 </body>

@@ -250,7 +250,7 @@ document.addEventListener('click',(event)=>{
     case 'all-services':case 'browse':resetSearch();goToCatalog();break;
     case 'all-categories':showAllCategories();break;
     case 'reset-search':resetSearch();break;
-    case 'chat':showChat();break;
+    case 'chat':showChat(target.dataset.palychPrompt||'');break;
     case 'palych-reset':palychConversation=[];renderPalychConversation();$('#chatInput').value='';$('#chatInput').focus();break;
     case 'close':closeModal();break;
     case 'menu':{const open=$('#mainNav').classList.toggle('open');target.setAttribute('aria-expanded',String(open));break;}

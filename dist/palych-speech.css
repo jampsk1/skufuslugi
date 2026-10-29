@@ -1,0 +1,130 @@
+/* A small conversational aside above the existing floating Palych button. */
+.palych-companion {
+  position: fixed;
+  z-index: 40;
+  right: max(26px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 270px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+.palych-companion > .assistant-button {
+  position: static;
+  right: auto;
+  bottom: auto;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+  pointer-events: auto;
+}
+.palych-companion > .assistant-button:hover { transform: none; }
+.palych-speech {
+  position: relative;
+  width: 100%;
+  margin-bottom: 14px;
+  border: 1px solid #d7e4f8;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 34px rgb(35 71 127 / 13%), 0 3px 9px rgb(35 71 127 / 4%);
+  opacity: 0;
+  transform: translateY(7px) scale(.98);
+  transform-origin: calc(100% - 140px) 100%;
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.palych-speech::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  right: 136px;
+  width: 12px;
+  height: 12px;
+  border-right: 1px solid #d7e4f8;
+  border-bottom: 1px solid #d7e4f8;
+  background: #fff;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.palych-speech.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.palych-speech-action {
+  display: block;
+  width: 100%;
+  min-height: 129px;
+  padding: 16px 40px 14px 18px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: #344d72;
+  text-align: left;
+}
+.palych-speech-action:hover { background: #fbfdff; }
+.palych-speech-action:focus-visible { outline-offset: 3px; }
+.palych-speech-kicker {
+  display: block;
+  margin-bottom: 7px;
+  color: #7e97bc;
+  font-size: 9px;
+  line-height: 1.6;
+  font-weight: 800;
+  letter-spacing: 1.15px;
+}
+.palych-speech-text {
+  display: block;
+  color: #344d72;
+  font-size: 14px;
+  line-height: 1.58;
+  font-weight: 650;
+  letter-spacing: -.15px;
+  overflow-wrap: break-word;
+  transition: opacity .115s ease, transform .115s ease;
+}
+.palych-speech.is-changing .palych-speech-text { opacity: 0; transform: translateY(3px); }
+.palych-speech-invite {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  margin-top: 9px;
+  color: var(--blue, #1259dd);
+  font-size: 11px;
+  line-height: 1.7;
+  font-weight: 750;
+}
+.palych-speech-invite > span { font-size: 14px; }
+.palych-speech-close, .palych-speech-next {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aabc3;
+  line-height: 1;
+}
+.palych-speech-close { top: 8px; right: 8px; font-size: 21px; font-weight: 400; }
+.palych-speech-next { right: 9px; bottom: 9px; font-size: 18px; }
+.palych-speech-close:hover, .palych-speech-next:hover { background: #edf3fc; color: var(--blue, #1259dd); }
+.palych-speech-close:focus-visible, .palych-speech-next:focus-visible { outline-offset: 1px; }
+@media (max-width: 760px) {
+  .palych-companion { right: max(16px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 540px) {
+  .palych-companion {
+    right: max(14px, calc(env(safe-area-inset-right) + 12px));
+    bottom: max(14px, calc(env(safe-area-inset-bottom) + 10px));
+  }
+  .palych-speech { margin-bottom: 12px; border-radius: 16px; }
+  .palych-speech-action { min-height: 126px; padding-left: 17px; }
+  .palych-speech-text { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .palych-speech, .palych-speech-text { transition: none; transform: none; }
+}
