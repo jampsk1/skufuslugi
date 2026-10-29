@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1259dd">
+  <meta name="description" content="Скуфуслуги — мемный портал для тех, кто уже всё понял. Удостоверение скуфа, разрешение на диван, рыбалка и ещё один бой. Всё решается с дивана.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Скуфуслуги — всё решается с дивана">
+  <meta property="og:description" content="Дела подождут. Скуфство — нет. Получите удостоверение скуфа и оформите заслуженный отдых.">
+  <meta property="og:image" content="https://skufuslugi.elitejampski.chatgpt.site/assets/hero-skuf.png">
+  <meta property="og:locale" content="ru_RU">
+  <title>Скуфуслуги — всё решается с дивана</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;750;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link sr-only" href="#catalog">Перейти к услугам</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="Скуфуслуги — на главную">
+        <svg class="brand-symbol" width="37" height="38" viewBox="0 0 38 38" aria-hidden="true"><path d="M6 6h26v15c0 7-13 14-13 14S6 28 6 21V6Z" fill="#1259dd"/><path d="M19 6h13v15c0 7-13 14-13 14V6Z" fill="#ee4859"/><path d="M11 17v8h16v-8m-13 1v-6h10v6m-13 3h16m-14 4v3m12-3v3" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><span class="brand-name"><span class="brand-blue">скуф</span><span class="brand-red">услуги</span></span><span class="brand-caption">Портал спокойной жизни</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Основная навигация" id="mainNav">
+        <button class="nav-link active" data-nav="services">Услуги</button>
+        <button class="nav-link" data-nav="documents">Документы</button>
+        <button class="nav-link" data-nav="applications">Заявления <span class="nav-counter" id="applicationCount" hidden>0</span></button>
+      </nav>
+      <div class="header-actions">
+        <button class="region-button" data-action="region"><svg width="17" height="19" viewBox="0 0 20 22" fill="none" aria-hidden="true"><path d="M17 9c0 5-7 11-7 11S3 14 3 9a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="10" cy="9" r="2.4" stroke="currentColor" stroke-width="1.7"/></svg><span id="regionLabel">Диванный округ</span></button>
+        <button class="login-button" data-action="profile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M5 21v-2a7 7 0 0 1 14 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span id="headerUser">Войти</span></button>
+        <button class="mobile-menu icon-button" aria-label="Открыть меню" aria-controls="mainNav" aria-expanded="false" data-action="menu">☰</button>
+      </div>
+    </div>
+  </header>
+  <div class="secondary-bar"><div class="container"><span class="portal-caption">Единый портал бытовых и диванных услуг</span><span class="weather"><span class="green-dot"></span> Работаем. Но без суеты.</span></div></div>
+  <main class="container">
+    <section class="page-intro" aria-labelledby="welcomeTitle"><div><p class="eyebrow">ДЛЯ ТЕХ, КТО УЖЕ ВСЁ ПОНЯЛ</p><h1 id="welcomeTitle">Взрослая жизнь. На расслабоне.</h1></div><p class="intro-note">Ваш комфорт —<br>наша главная забота</p></section>
+    <section class="hero-grid" aria-label="Добро пожаловать">
+      <div class="hero-card">
+        <div class="hero-copy"><span class="hero-label"><span class="green-dot"></span> Всё решается с дивана</span><h2>Дела подождут.<br>Скуфство — нет.</h2><p>Оформляйте важное, получайте положенное.<br>Тапочки снимать не обязательно.</p><button class="button button-blue" data-action="quiz">Подтвердить скуфство <span aria-hidden="true">↗</span></button><span class="hero-note">2 минуты · без очереди и осуждения</span></div>
+        <div class="hero-art"><img class="hero-illustration" src="assets/hero-skuf.png" alt="Довольный скуф отдыхает на оранжевом диване с кружкой чая и спящим котом" fetchpriority="high"><div class="hero-stamp"><span>✓</span><div>Право на отдых<strong>Подтверждено жизнью</strong></div></div></div>
+      </div>
+      <aside class="profile-card"><div class="profile-icon" aria-hidden="true">🪪</div><span class="profile-kicker">ЛИЧНЫЙ КАБИНЕТ</span><h3 id="profileTitle">Свой человек?<br>Заходите.</h3><p id="profileDescription">Ваши заявления, документы<br>и заслуженные привилегии.</p><button class="button button-outline" data-action="profile" id="profileButton">Войти по-скуфски <span aria-hidden="true">→</span></button><div class="profile-footer"><svg width="15" height="17" viewBox="0 0 20 22" fill="none" aria-hidden="true"><path d="M3 4 10 1l7 3v7c0 5-7 9-7 9s-7-4-7-9V4Z" stroke="currentColor" stroke-width="1.6"/><path d="m6.5 10 2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.6"/></svg> Соседи ничего не узнают</div></aside>
+    </section>
+    <section class="search-panel" aria-label="Поиск по услугам"><form class="search-form" id="searchForm" role="search"><label class="sr-only" for="serviceSearch">Поиск услуг</label><svg class="search-icon" width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.2" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="serviceSearch" type="search" placeholder="Какой вопрос порешаем?" autocomplete="off"><button class="button button-blue search-button" type="submit">Найти услугу <span aria-hidden="true">→</span></button></form><div class="search-suggestions"><span>Например:</span><button data-search="диван">разрешение на диван</button><button data-search="рыбалка">выезд на рыбалку</button><button data-search="ничего">ничего не делать</button></div></section>
+    <section class="categories-section" aria-labelledby="categoryHeading"><div class="section-heading"><h2 id="categoryHeading">Всё для своих</h2><button class="text-link" data-action="all-services">Все категории <span aria-hidden="true">→</span></button></div><div class="category-grid" id="categoryGrid"></div></section>
+    <section id="catalog" class="catalog-section" aria-labelledby="catalogHeading"><div class="section-heading catalog-heading"><h2 id="catalogHeading">Популярные услуги</h2><div class="catalog-tools"><button class="filter-tab active" data-filter="popular" aria-pressed="true">Популярное</button><button class="filter-tab" data-filter="all" aria-pressed="false">Все услуги</button></div></div><p class="results-count" id="resultsCount" aria-live="polite" hidden></p><div class="services-grid" id="servicesGrid"></div></section>
+    <section class="club-banner" aria-labelledby="clubHeading"><div class="club-copy"><span class="mini-label"><span class="green-dot"></span> СТАТУС, КОТОРЫЙ ЗАСЛУЖИЛИ</span><h2 id="clubHeading">Скуф — это звучит спокойно.</h2><p>Пройдите тест и получите удостоверение.<br>Возраст — просто цифра. Диван — призвание.</p><button class="button button-blue" data-action="quiz">Узнать свой уровень <span aria-hidden="true">↗</span></button></div><div class="certificate-preview" aria-hidden="true"><div class="certificate-symbol">✦</div><span class="certificate-heading">УДОСТОВЕРЕНИЕ СКУФА</span><span class="certificate-rule"></span><span class="certificate-name">Заслуженный<br>человек дивана</span><span class="certificate-meta">Скуфуслуги <span>№ СК-000001</span></span><span class="certificate-seal">ОДОБРЕНО<br>ДИВАНОМ</span></div><span class="club-decor" aria-hidden="true">✳</span></section>
+    <section class="news-section" aria-labelledby="newsHeading"><div class="section-heading"><h2 id="newsHeading">Вести с дивана</h2><span class="section-caption">Всё важное. Ничего срочного.</span></div><div class="news-grid" id="newsGrid"></div></section>
+    <section class="faq-section" aria-labelledby="faqHeading"><div class="section-heading"><h2 id="faqHeading">Есть вопросики?</h2><span class="section-caption">Сейчас всё объясним</span></div><div class="faq-list"><details><summary>Кто вообще может стать скуфом?<span aria-hidden="true">+</span></summary><p>Любой, кто ценит комфорт, умеет отдыхать и хоть раз говорил «дома лучше». Возраст, пол и наличие гаража значения не имеют. Пройдите тест — диванная комиссия разберётся.</p></details><details><summary>Здесь правда можно получить документы?<span aria-hidden="true">+</span></summary><p>Можно получить шуточное удостоверение скуфа и подать мемное заявление. Скуфуслуги — развлекательный проект. Наши документы имеют исключительно диванную силу.</p></details><details><summary>Сколько стоят услуги?<span aria-hidden="true">+</span></summary><p>Ноль рублей и немного вашего свободного времени. Все услуги бесплатные. Чай, печеньки и носки с сандалиями приобретаются по желанию.</p></details><details><summary>Где хранятся мои заявления?<span aria-hidden="true">+</span></summary><p>В этом браузере, на вашем устройстве. После подачи они появятся в разделе «Заявления». При очистке данных браузера история исчезнет. Настоящие паспортные данные нам не нужны — достаточно имени или прозвища.</p></details></div></section>
+  </main>
+  <footer class="site-footer"><div class="container"><div class="footer-top"><div class="footer-brand"><a class="brand-name" href="#"><span class="brand-blue">скуф</span><span class="brand-red">услуги</span></a><p>Государство души.<br>Территория комфорта.</p></div><div class="footer-links"><button data-action="about">О портале</button><button data-action="privacy">Ваши данные</button><button data-action="chat">Служба скуфподдержки</button><span>Работаем с перекурами, 24/7</span></div><div class="footer-rest"><span aria-hidden="true">🛋️</span><span>Вы заслужили<br><strong>немного полежать.</strong></span></div></div><div class="footer-bottom"><span>© 2026 Скуфуслуги · Сделано без лишних движений</span><span>Мемный проект. Не связан с Госуслугами и государственными органами.</span></div></div></footer>
+  <button class="assistant-button" data-action="chat"><span class="assistant-avatar" aria-hidden="true">💬</span><span>Скуфпомощник</span><span class="assistant-online" aria-hidden="true"></span></button>
+  <dialog class="modal" id="mainModal" aria-labelledby="modalTitle"><div class="modal-header"><h2 id="modalTitle"></h2><button class="icon-button modal-close" aria-label="Закрыть окно">✕</button></div><div class="modal-body" id="modalBody"></div></dialog>
+  <div class="toast" role="status" id="toast" hidden></div>
+</body>
+</html>
