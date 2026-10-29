@@ -21,7 +21,9 @@
 - Адаптивная вёрстка, клавиатурная навигация и диалоги.
 - Страница `about-skufs.html` с гидом о скуфах: значение мема, места обитания, привычки и советы по общению. Ссылка «О скуфах» находится в верхнем меню; кнопка теста возвращает на главную и открывает тест через `?quiz=1`.
 
-Данные форм хранятся только в localStorage текущего браузера. История разговора с Палычем доступна до обновления страницы; кнопка «Новый разговор» очищает её. Палыч использует локальный подбор намерений и базу услуг, без внешних запросов и ключей API. Это развлекательный проект, не связанный с государственными органами. Серверная регистрация, настоящие документы и платежи не используются.
+Функциональные данные профиля, теста и заявлений хранятся в localStorage текущего браузера. История разговора с Палычем доступна до обновления страницы; кнопка «Новый разговор» очищает её. Палыч использует локальный подбор намерений и базу услуг, без внешних запросов и ключей API. Это развлекательный проект, не связанный с государственными органами. Серверная регистрация, настоящие документы и платежи не используются.
+
+На обеих страницах подключена Яндекс Метрика №113901612: аналитика посещений и кликов, Вебвизор, отслеживание ссылок и точный показатель отказов. Контейнер электронной коммерции — `window.dataLayer`; собственные события покупок сайт не отправляет. Имя, сообщения, содержимое личных модальных окон и ввод в поиске скрыты от записи Вебвизора с помощью классов `ym-hide-content` и `ym-disable-keys`. Код инициализации находится в `dist/metrika.js`, а сетевые разрешения CSP — в `deploy/Caddyfile`.
 
 ## Резервная копия и материалы для соцсетей
 
@@ -42,3 +44,68 @@
 Карусель использует три иллюстрации: `dist/assets/hero-skuf.png`, `dist/assets/hero-banya.png` и `dist/assets/hero-garage.png`. Две новые сцены созданы встроенным ImageGen с оригиналом как референсом персонажа и стиля. Полные промпты сохранены в `IMAGE-PROMPTS.txt`.
 
 `dist/assets/hero-skuf.png` создана встроенным ImageGen для этого проекта. Промпт: «A polished friendly 3D clay-render cutout of a contented slightly chubby middle-aged man with a receding hairline and moustache, wearing a white tank top, navy shorts, white socks and slippers, relaxing on a warm orange sofa with a tea mug and a sleeping cat. Soft studio lighting, tactile materials, transparent background, no text or logos.»
+
+## Docker на ВМ
+
+Рабочий домен: `https://skufuslugi.ru`, ВМ: `178.253.39.6`, каталог: `/opt/skufuslugi`, контейнер: `skufuslugi`. В образ попадает только сайт из `dist/` и конфигурация Caddy. Сервер работает от UID/GID `10001:10001`, с файловой системой только для чтения, без Linux capabilities и с лимитом памяти 128 МБ. Caddy автоматически выпускает и продлевает HTTPS-сертификат; его состояние хранится в отдельных Docker volumes.
+
+Первичная подготовка предназначена для осмотренной Ubuntu 24.04. Сначала загрузите Dockerfile, `.dockerignore`, `compose.yaml`, `deploy/` и `dist/` в `/opt/skufuslugi`. Затем от root:
+
+```sh
+cd /opt/skufuslugi
+bash deploy/provision.sh
+install -m 0600 deploy/00-skufuslugi.conf /etc/ssh/sshd_config.d/00-skufuslugi.conf
+sshd -t && systemctl reload ssh
+bash deploy/deploy.sh
+```
+
+Парольный вход root намеренно сохранён. SSH защищают UFW LIMIT, Fail2ban и ограничения sshd. UFW допускает только TCP 22, 80 и 443 для IPv4 и IPv6. Отдельный systemd unit `skufuslugi-docker-firewall` ограничивает входящий Docker forwarding веб-портами, поскольку опубликованные Docker-порты обходят правила UFW INPUT.
+
+Для проверки запуска:
+
+```sh
+docker compose ps
+docker compose logs --tail=100 web
+curl -I http://skufuslugi.ru
+curl -I https://skufuslugi.ru
+ufw status verbose
+fail2ban-client status sshd
+systemctl status skufuslugi-docker-firewall --no-pager
+```
+
+С внешнего компьютера запустите `python deploy/verify.py --ip 178.253.39.6`: скрипт проверит доверенный TLS-сертификат домена, HTTPS-редирект, хеши всех файлов, защитные заголовки, закрытые служебные пути и основные сетевые порты. Параметр `--ip` сохраняет проверку имени TLS и позволяет проверить ВМ, пока локальный DNS-кэш хранит старый ответ. Отрицательные DNS-ответы роутера исчезают после истечения своего TTL. Для проверки обычного DNS-разрешения выполните скрипт без `--ip`. Внешняя проверка IPv6 требует IPv6-подключения на проверяющем компьютере.
+
+### Обновление и откат
+
+Загрузите обновлённые файлы сайта и выполните `bash deploy/deploy.sh`. Скрипт сохраняет предыдущий работающий образ как `skufuslugi:previous`, собирает новый, проверяет конфигурацию Caddy и ждёт успешного healthcheck. Для отката:
+
+```sh
+cd /opt/skufuslugi
+docker tag skufuslugi:previous skufuslugi:local
+docker compose up -d --no-build --force-recreate --wait
+```
+
+При изменении `compose.yaml` сохраняйте также его предыдущую копию. Предыдущий образ сохраняется до следующего обновления. Ubuntu и Docker CE получают автоматические обновления через unattended-upgrades; автоматическая перезагрузка выключена. Проверяйте `/var/run/reboot-required` и перезагружайте ВМ в удобное время. После перезагрузки, рестарта Docker или `ufw reload` проверяйте сайт и цепь `DOCKER-USER → SKUF-DOCKER-FW`; при необходимости выполните `systemctl restart skufuslugi-docker-firewall`.
+
+Базовый образ Caddy закреплён по digest для воспроизводимости. Для его исправлений безопасности обновите digest официального образа в Dockerfile, пересоберите и проверьте сайт: `--pull` с прежним digest не выбирает новый релиз.
+
+### Резервные копии
+
+Сохраняйте исходники и конфигурацию отдельно от ВМ. Локальное состояние профилей и заявлений находится в браузерах посетителей; аналитические записи Яндекс Метрики хранятся отдельно в сервисе Яндекса. Docker volumes `skufuslugi_caddy_data` и `skufuslugi_caddy_config` содержат TLS-состояние, включая закрытые ключи: архивы должны быть доступны только root и храниться вне `dist/`.
+
+Для согласованной копии с короткой остановкой сайта:
+
+```sh
+cd /opt/skufuslugi
+install -d -m 0700 /var/backups/skufuslugi
+docker compose stop web
+docker run --rm --network none --user 0:0 --entrypoint tar \
+  -v skufuslugi_caddy_data:/data:ro \
+  -v skufuslugi_caddy_config:/config:ro \
+  -v /var/backups/skufuslugi:/backup \
+  skufuslugi:local czf /backup/caddy-state.tar.gz -C / data config
+chmod 0600 /var/backups/skufuslugi/caddy-state.tar.gz
+docker compose up -d --no-build --wait
+```
+
+Для восстановления остановите контейнер, распакуйте архив в эти же тома вспомогательным контейнером от root, восстановите владельца `10001:10001` и запустите Compose. Тома объявлены внешними и сохраняются при `docker compose down`. Не удаляйте их вручную при обычном обновлении.

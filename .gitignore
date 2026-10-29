@@ -11,3 +11,4 @@ node_modules/
 *-preview.png
 .DS_Store
 Thumbs.db
+deploy/verification*.json
