@@ -13,11 +13,8 @@
   };
   if (Object.values(fields).some(field => !field)) return;
   const dots = [...carousel.querySelectorAll('[data-hero-slide]')];
-  const previous = carousel.querySelector('[data-hero-prev]');
-  const next = carousel.querySelector('[data-hero-next]');
-  const pause = carousel.querySelector('[data-hero-pause]');
   const controls = carousel.querySelector('.hero-carousel-controls');
-  if (!previous || !next || !pause || !controls) return;
+  if (!dots.length || !controls) return;
 
   const slides = [
     {
@@ -55,7 +52,6 @@
   let generation = 0;
   let timer;
   let transitionTimer;
-  let paused = motion.matches;
   let hovered = false;
   let focused = false;
   let onScreen = true;
@@ -77,7 +73,7 @@
     element.replaceChildren(content);
   }
   function stopTimer() { clearTimeout(timer); }
-  function autoAllowed() { return !paused && !hovered && !focused && onScreen && !document.hidden && !modal?.open; }
+  function autoAllowed() { return !motion.matches && !hovered && !focused && onScreen && !document.hidden && !modal?.open; }
   function canPlay() { return autoAllowed() && !changing; }
   function cancelChange() {
     changing = false;
@@ -89,11 +85,8 @@
     stopTimer();
     if (canPlay()) timer = setTimeout(() => requestSlide(index + 1, false), 8000);
   }
-  function updatePauseButton() {
-    pause.setAttribute('aria-pressed', String(paused));
-    pause.setAttribute('aria-label', paused ? 'Включить автопрокрутку' : 'Остановить автопрокрутку');
-    pause.textContent = paused ? '▶' : 'Ⅱ';
-    carousel.dataset.autoplay = paused ? 'paused' : 'playing';
+  function updateAutoplayState() {
+    carousel.dataset.autoplay = motion.matches ? 'paused' : 'playing';
   }
   function updateSlide(target, manual) {
     const slide = slides[target];
@@ -164,14 +157,7 @@
     }, motion.matches ? 0 : 140);
   }
 
-  previous.addEventListener('click', () => requestSlide(requestedIndex - 1, true));
-  next.addEventListener('click', () => requestSlide(requestedIndex + 1, true));
   dots.forEach(dot => dot.addEventListener('click', () => requestSlide(Number(dot.dataset.heroSlide), true)));
-  pause.addEventListener('click', () => {
-    paused = !paused;
-    updatePauseButton();
-    armTimer();
-  });
   controls.addEventListener('keydown', event => {
     let target;
     if (event.key === 'ArrowRight') target = requestedIndex + 1;
@@ -202,9 +188,8 @@
   });
   carousel.addEventListener('pointercancel', () => { pointerStart = null; });
   document.addEventListener('visibilitychange', armTimer);
-  motion.addEventListener('change', event => {
-    if (event.matches) paused = true;
-    updatePauseButton();
+  motion.addEventListener('change', () => {
+    updateAutoplayState();
     armTimer();
   });
   if (modal) new MutationObserver(armTimer).observe(modal, {attributes: true, attributeFilter: ['open']});
@@ -212,7 +197,7 @@
     onScreen = entries[0].isIntersecting;
     armTimer();
   }, {threshold: .15}).observe(carousel);
-  updatePauseButton();
+  updateAutoplayState();
   updateSlide(0, false);
   armTimer();
 })();

@@ -15,16 +15,13 @@
 .hero-carousel[data-slide="2"] .hero-art > img { width: 111%; right: -11px; bottom: 62px; }
 .hero-carousel .hero-copy, .hero-carousel .hero-art { transition: opacity .14s ease, transform .14s ease; }
 .hero-carousel.is-changing .hero-copy, .hero-carousel.is-changing .hero-art { opacity: 0; transform: translateY(4px); }
-.hero-carousel-controls { position: absolute; z-index: 6; right: 24px; bottom: 13px; left: 30px; display: flex; justify-content: space-between; align-items: center; gap: 18px; }
-.hero-carousel-dots, .hero-carousel-navigation { display: flex; align-items: center; gap: 4px; }
+.hero-carousel-controls { position: absolute; z-index: 6; bottom: 13px; left: 30px; display: flex; align-items: center; }
+.hero-carousel-dots { display: flex; align-items: center; gap: 4px; }
 .hero-carousel-dot { display: flex; align-items: center; justify-content: center; width: 28px; height: 40px; padding: 0; border-radius: 10px; background: transparent; }
 .hero-carousel-dot::before { content: ""; display: block; width: 6px; height: 6px; border-radius: 8px; background: #a8b9d3; transition: width .2s ease, background-color .2s ease; }
 .hero-carousel-dot[aria-pressed="true"] { width: 35px; }
 .hero-carousel-dot[aria-pressed="true"]::before { width: 24px; background: var(--blue); }
 .hero-carousel-dot:hover::before { background: var(--blue); }
-.hero-carousel-navigation > button { display: flex; align-items: center; justify-content: center; width: 39px; height: 39px; flex-shrink: 0; padding: 0; border: 1px solid rgb(255 255 255 / 85%); border-radius: 50%; background: rgb(255 255 255 / 70%); color: #5678aa; font-size: 19px; font-weight: 600; line-height: 1; }
-.hero-carousel-navigation > button:hover { color: var(--blue); background: #fff; }
-.hero-carousel-navigation > [data-hero-pause] { font-size: 13px; letter-spacing: -1px; }
 .hero-carousel-controls button:focus-visible { outline-offset: 2px; }
 @media (max-width: 1180px) and (min-width: 761px) {
   .hero-card.hero-carousel { height: 380px; }
@@ -35,7 +32,7 @@
   .hero-carousel[data-slide="1"] .hero-art > img,
   .hero-carousel[data-slide="2"] .hero-art > img { width: 119%; right: -24px; bottom: 72px; }
   .hero-carousel .hero-stamp { right: 12px; bottom: 65px; font-size: 8px; }
-  .hero-carousel-controls { right: 20px; left: 23px; }
+  .hero-carousel-controls { left: 23px; }
 }
 @media (max-width: 760px) {
   .hero-card.hero-carousel { height: 370px; }
@@ -61,8 +58,7 @@
   .hero-carousel .hero-art::before { top: 0; }
   .hero-carousel .hero-stamp { right: 12px; bottom: 66px; max-width: 187px; gap: 4px; padding: 7px; font-size: 9px; }
   .hero-carousel .hero-stamp strong { font-size: 8px; }
-  .hero-carousel-controls { right: 15px; bottom: 10px; left: 17px; }
-  .hero-carousel-navigation > button { width: 38px; height: 38px; }
+  .hero-carousel-controls { bottom: 10px; left: 17px; }
 }
 @media (max-width: 360px) {
   .hero-carousel .hero-copy { padding-left: 18px; }
