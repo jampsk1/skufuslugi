@@ -67,3 +67,53 @@ test('answers are plain text and reference only supplied catalogue services',()=
   }
   assert.deepEqual(engine.respond('Рыбалка',{services:[]}).services,[]);
 });
+
+test('altushka requests and specific dating plans select their own services',()=>{
+  const cases=[
+    ['Хочу альтушку','altushka'],
+    ['Как получить альтушку?','altushka'],
+    ['Выдача альтушек','altushka'],
+    ['Альтушка для скуфа','altushka'],
+    ['Хочу познакомиться с альтушкой','altushka'],
+    ['Пригласить девушку на свидание','date'],
+    ['Пойдём с альтушкой на концерт','concert'],
+    ['У нас разная музыка','playlist'],
+    ['Нужна совместимость плейлистов','playlist'],
+    ['Как понравиться альтушке?','makeover'],
+    ['Хочу стать загадочным мужчиной','makeover'],
+    ['Сказал, что это просто фаза','apology']
+  ];
+  for(const [query,id]of cases)assert.equal(ask(query).services[0],id,query);
+});
+test('rejected dating intent never wins over garage even without punctuation',()=>{
+  for(const query of ['Не хочу альтушку, хочу в гараж','Не хочу альтушку хочу в гараж']) {
+    const result=ask(query);
+    assert.equal(result.services[0],'garage',query);
+    assert.ok(!result.services.includes('altushka'),query);
+  }
+});
+test('dating followups describe actual form fields and avoid promised matchmaking',()=>{
+  const history=[{role:'assistant',...ask('Хочу альтушку')}];
+  const price=ask('А сколько стоит?',{history});
+  assert.equal(price.services[0],'altushka');
+  assert.match(price.text,/бесплатна/);
+  assert.match(price.text,/не подбирает людей/);
+  assert.match(price.text,/18\+/);
+  const documents=ask('Какие документы нужны?',{history});
+  assert.match(documents.text,/формат встречи/);
+  assert.match(documents.text,/18 лет/);
+  assert.doesNotMatch(documents.text,/желаемого срока/);
+  const form=ask('Как оформить?',{history});
+  assert.match(form.text,/имя, дату и формат встречи/);
+  assert.match(form.text,/взаимное желание/);
+  const duration=ask('А на сколько?',{history});
+  assert.match(duration.text,/Прогулка и кофе/);
+  assert.match(duration.text,/Концерт/);
+  assert.match(duration.text,/Парк и разговоры/);
+  assert.doesNotMatch(duration.text,/На весь день/);
+  assert.match(ask('Какие форматы встречи?',{history}).text,/Прогулка и кофе/);
+});
+test('a specific first date is not treated as an ordinal followup',()=>{
+  const history=[{role:'assistant',services:['fishing','dacha']}];
+  assert.equal(ask('Хочу первое свидание',{history}).services[0],'date');
+});

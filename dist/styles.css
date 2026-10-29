@@ -836,3 +836,31 @@ main { padding-bottom: 64px; }
   .document-meta { font-size: 10px; }
   .document-card > small { font-size: 10px; }
 }
+
+/* The new romance category keeps the six everyday categories together. */
+.category-button.category-dating { grid-column: 1 / -1; display: flex; align-items: center; gap: 20px; min-height: 112px; padding: 21px 25px; background: linear-gradient(110deg, #f1eaff, #fcf6ff); border-color: #e4d9f6; }
+.category-button.category-dating:hover, .category-button.category-dating.active { background: #eee3ff; border-color: #bf9eea; }
+.category-dating .category-icon { justify-content: center; width: 62px; height: 62px; border-radius: 18px; background: #fff; color: #9561c6; }
+.category-dating .category-icon svg { width: 32px; height: 32px; }
+.category-dating-copy { flex: 1; min-width: 0; }
+.category-dating-label { display: block; margin-bottom: 4px; color: #9868bd; font-size: 9px; font-weight: 800; letter-spacing: 1.6px; }
+.category-dating .category-title { margin-top: 0; font-size: 22px; line-height: 1.4; letter-spacing: -.55px; }
+.category-dating .category-count { margin-top: 4px; color: #937fa6; font-size: 12px; }
+.category-dating-badge { padding: 6px 11px; border: 1px solid #e1d4f1; border-radius: 24px; color: #a178ba; font-size: 11px; }
+.category-dating-arrow { display: flex; justify-content: center; align-items: center; width: 39px; height: 39px; flex-shrink: 0; border-radius: 50%; background: #fff; color: #9666c0; font-size: 20px; }
+.news-v1 { background: #f0e7fa; }
+.news-v1 .news-visual-label { color: #8e71a5; }
+@media (max-width: 760px) {
+  .category-button.category-dating { gap: 14px; padding: 19px; }
+  .category-dating .category-title { font-size: 20px; }
+  .category-dating-badge { display: none; }
+}
+@media (max-width: 540px) {
+  .category-button.category-dating { gap: 11px; padding: 17px 14px; }
+  .category-dating .category-icon { width: 43px; height: 46px; border-radius: 13px; }
+  .category-dating .category-icon svg { width: 27px; height: 27px; }
+  .category-dating-label { font-size: 8px; letter-spacing: 1px; }
+  .category-dating .category-title { font-size: 17px; line-height: 1.5; letter-spacing: -.4px; }
+  .category-dating .category-count { font-size: 11px; line-height: 1.7; }
+  .category-dating-arrow { width: 27px; height: 27px; font-size: 17px; }
+}
