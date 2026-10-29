@@ -264,3 +264,4 @@ document.addEventListener('click',(event)=>{
 });
 renderCategories();renderServices();renderNews();syncProfile();
 $$('[data-palych-avatar]').forEach(el=>{el.innerHTML=palychAvatar();});
+if(new URLSearchParams(window.location.search).get('quiz')==='1')startQuiz();
