@@ -1,0 +1,24 @@
+Скуфуслуги — картинка к анонсу проекта в ВК
+
+Режим: встроенный ImageGen, генерация по референсу и одна правка заголовка.
+Референс: skufuslugi/dist/assets/hero-skuf.png.
+Финальная картинка: vk-launch.png.
+
+GENERATE
+
+Use case: ads-marketing.
+Asset type: finished square VK feed announcement artwork for the Russian humorous portal Скуфуслуги.
+Primary request: a polished warm funny launch poster in the same brand and premium cozy 3D character style as Image 1.
+Input images: Image 1 is a character, sofa, cat and rendering-style REFERENCE, not a layout template.
+Canvas: square 1:1, target 1536x1536. Fill the canvas edge to edge.
+Scene: airy pale powder-blue background #e9f1ff, a subtle large soft blue disk behind the sofa and warm cream light near the floor. Very clean, tasteful, cozy, premium. No busy room.
+Subject: preserve the same friendly stocky middle-aged man from Image 1: receding brown hair, small brown moustache, rounded nose, white tank top, navy blue shorts, white socks, plaid slippers, knowing warm smile. He lounges on the plush orange sofa holding his white mug with blue rim. Preserve the peaceful sleeping tabby-and-white cat beside him and the blue pillows. The character scene occupies the bottom 65% of the square. Everything including feet and cat fits comfortably, with a little bottom breathing space.
+Typography and layout: editorial social announcement with very large, flawlessly typeset Cyrillic, bold rounded geometric sans serif similar to Manrope. At the top center, around y=125, the exact single word 'скуфуслуги', with 'скуф' in royal blue #1259dd and 'услуги' in coral #ee4859; a small split-blue-and-coral shield with a white couch icon immediately to its left. Under it around y=270, one bold navy headline 'МЫ ОТКРЫЛИСЬ!' (exact spelling), clearly readable on a phone. Then one smaller navy line around y=365: 'Всё решается с дивана.'.
+All copy stays within the top 30% and has balanced spacing, at least 90px away from edges. Main character face approximately x=930,y=660; no overlap between his head and the text. Warm soft studio lamplight, tactile sofa fabric, expressive friendly face, high quality 3D rendering, affectionate self-irony, beautiful crisp finish.
+Text (verbatim, only these three lines): 'скуфуслуги', 'МЫ ОТКРЫЛИСЬ!', 'Всё решается с дивана.'.
+Constraints: actual finished artwork, not a mockup; no VK interface, no watermark, no extra people, no extra slogans, no URL, no legal state emblems, no ribbon cutting, no medals, no confetti clutter. Preserve the beloved character's identity and the cat.
+
+EDIT — HEADLINE
+
+Use case: text-localization. Image 1 is the EDIT TARGET, the finished square social post image. Replace ONLY the large navy headline 'МЫ ОТКРЫЛИСЬ!' with the exact navy headline 'ПОРТАЛ ДЛЯ СКУФОВ'. Keep it as a single bold line in the same area, slightly reduce its font size as needed so it has good margins and reads clearly. Preserve the brand wordmark 'скуфуслуги' and the smaller line 'Всё решается с дивана.' completely unchanged. Preserve all illustration pixels and composition as closely as possible: the same man, his face, pose, mug, sofa, cat, pillows, colors, lighting and background. No other edits. Keep square 1:1. No added text or URL.
+

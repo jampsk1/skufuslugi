@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Скуфуслуги — логотип</title>
+  <desc id="desc">Белый диван на синем и красном фоне. Фирменный знак портала спокойной жизни.</desc>
+  <defs><clipPath id="tile"><rect width="64" height="64" rx="16"/></clipPath></defs>
+  <g clip-path="url(#tile)">
+    <rect width="64" height="64" fill="#1259dd"/>
+    <rect x="32" width="32" height="64" fill="#ee4859"/>
+  </g>
+  <path d="M14 30v15h36V30M21 31V20h22v11M14 37h36M19 45v6m26-6v6" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
