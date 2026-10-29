@@ -1,0 +1,161 @@
+(function (root, factory) {
+  'use strict';
+  const engine = factory();
+  if (typeof module === 'object' && module.exports) module.exports = engine;
+  if (root) root.PalychEngine = engine;
+})(typeof window === 'undefined' ? null : window, function () {
+  'use strict';
+
+  // Small, local domain assistant. Answers and actions come from the portal catalogue.
+  // Returned text is plain text; the view owns escaping, rendering and user actions.
+  const defaults = {
+    sofa: 'Разрешение на ничего не делание', certificate: 'Удостоверение настоящего скуфа',
+    fishing: 'Согласование выезда на рыбалку', grill: 'Открытие шашлычного сезона',
+    garage: 'Пропуск в гараж на весь день', battle: 'Продление «ещё одного боя»',
+    nap: 'Законные «ещё пять минут»', car: 'Справка «тут что-то стучит»',
+    dacha: 'Дачная амнистия от огорода', tea: 'Перерыв на чай с чем-нибудь',
+    remote: 'Закрепление прав на пульт', socks: 'Регистрация носков с сандалиями'
+  };
+  const domain = {
+    sofa: {category:'rest', strong:['диван','отдых','отдох','устал','устат','полеж','расслаб','выгор','передох','ничего','бездель','отпуск','ленив','лень'], related:['комфорт','покой','тишин','выходн']},
+    certificate: {category:'status', strong:['скуф','удостовер','сертифик','тест','уровень','призван'], related:['статус','документ']},
+    fishing: {category:'fishing', strong:['рыб','удоч','спиннинг','клев','поплав','карась','карас','щук','карп'], related:['лов','озер','речк','рек','водоем']},
+    grill: {category:'grill', strong:['шашл','мангал','угл','мяс','марина','грил','барбек'], related:['жар','шампур','пикник']},
+    garage: {category:'garage', strong:['гараж','инструмент','дрел','верстак','отвертк','гайк','ключи','мастерск'], related:['ремонт','авто']},
+    battle: {category:'games', strong:['танк','танчик','катк','бой','боя','боев','битв','гейм','компьютер','консол','поигр','игр'], related:['команд','побед','рейтинг','последн']},
+    nap: {category:'rest', strong:['сон','спат','посп','будиль','подуш','просып','дрем','пять','просп','засн','высп','сплю'], related:['утр','минут','кроват']},
+    car: {category:'garage', strong:['машин','автомоб','колес','мотор','двигател','стуч','стук','скрип','грем','лома','полом'], related:['авто','ремонт','звук','диагност']},
+    dacha: {category:'fishing', strong:['дач','огород','гряд','копа','помидор','рассад','лопат','картош','посад','пропол','сорняк'], related:['сад','земл','теплиц']},
+    tea: {category:'grill', strong:['чай','чаю','чаек','кофе','печен','сладк','перерыв','перекус','булоч','плюшк','вкусн'], related:['кухн','поест','еда','еду']},
+    remote: {category:'games', strong:['пульт','телевиз','телик','футбол','сериал','кино','канал','матч'], related:['смотр','новост','тв']},
+    socks: {category:'status', strong:['носк','сандал','тапоч','одежд','стил','мод','обув','одет'], related:['удобн','комфорт']}
+  };
+  const copy = {
+    sofa:'Похоже, батарейка села. Оформим право спокойно полежать: без очереди и чувства вины. Чай и диван уже на вашей стороне.',
+    certificate:'Проверим ваш уровень комфорта: пять вопросов — и готово шуточное удостоверение скуфа. Пол, возраст и наличие усов роли не играют.',
+    fishing:'На рыбалку — это уважительная причина. Нашёл согласование выезда: выберите дату и срок, а клюёт или нет — дело десятое.',
+    grill:'Угли прогреваются, полномочия оформляются. Для шашлыков есть отдельная услуга — сезон у нас по состоянию души.',
+    garage:'Гараж — место силы. Оформите пропуск на весь день: даже просто постоять и посмотреть уже считается делом.',
+    battle:'Знакомая ситуация: «последний бой» длится третий час. Нашёл продление — диванная комиссия всё понимает.',
+    nap:'Ещё пять минут — святое. Оформите шуточное продление сна, а будильнику передайте: Палыч в курсе.',
+    car:'Если в машине что-то стучит, на портале можно оформить шуточную справку. Настоящую причину звука определяет автомастер — Палыч гайки на слух не затягивает.',
+    dacha:'На дачу можно и просто отдыхать. Для грядок нашлась дачная амнистия: шуточное разрешение приехать и не копать. Помидоры поймут.',
+    tea:'Сначала чай, потом дела. Нашёл перерыв с чем-нибудь вкусным — печенье к печенью тоже разрешается.',
+    remote:'Кто держит пульт, тот выбирает вечер. Здесь можно шуточно закрепить за собой право на телевизор и комментарии к матчу.',
+    socks:'Носки с сандалиями — продуманная система комфорта. Зарегистрируйте сочетание: чужое мнение к заявлению не требуется.'
+  };
+  const commonSuggestions = ['Хочу отдохнуть', 'Жена зовёт копать грядки', 'Как стать скуфом?'];
+  const stopwords = new Set(('а и или но я мы ты вы он она они это этот эта эти вот тут там мне меня мой моя мои нам нас свой свою хочу хочется хотел хотела можно надо нужно да нет пожалуйста подскажи помоги скажи как что где когда зачем почему какой какая какие какую сколько ли бы же для на по от до из у в во с со к ко о об про за не без то очень просто уже еще только есть был была будет сегодня завтра').split(' '));
+  function normalize(value) { return String(value || '').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/[^а-яa-z0-9\s]/g,' ').replace(/\s+/g,' ').trim(); }
+  function tokens(value) { return normalize(value).split(' ').filter(Boolean); }
+  function prefixMatches(words, prefixes) { return prefixes.filter(prefix => words.some(word => word.startsWith(prefix))).length; }
+  function response(text, services, actions, suggestions) {
+    return {text, services:services || [], actions:actions || [], suggestions:suggestions || []};
+  }
+  function lastContext(history, available) {
+    for (const entry of [...(Array.isArray(history)?history:[])].reverse()) {
+      if (!entry || entry.role === 'user') continue;
+      const payload=entry.response || entry.result || entry;
+      const ids=Array.isArray(payload.services)?payload.services:payload.serviceId?[payload.serviceId]:[];
+      const valid=ids.map(id=>typeof id==='string'?id:id && id.id).filter(id=>available.has(id));
+      if(valid.length) return valid;
+    }
+    return [];
+  }
+  function rank(query, services) {
+    const clauses=String(query || '').toLowerCase().replace(/ё/g,'е').split(/[,;.!?]|\s+(?:а|но|зато|лучше)\s+/u).filter(Boolean);
+    const totals=new Map();
+    const excluded=new Set();
+    for(const clause of clauses) {
+      const words=tokens(clause);
+      const negative=/(?:^|\s)не\s+(?:хочу|хотим|хочется|надо|нуж[а-я]*|поед[а-я]*|люб[а-я]*|интерес[а-я]*|собира[а-я]*)/.test(normalize(clause));
+      for(const service of services) {
+        const d=domain[service.id]; if(!d)continue;
+        const strong=prefixMatches(words,d.strong);
+        const related=prefixMatches(words,d.related);
+        if(!strong&&!related)continue;
+        const specialRest=service.id==='sofa' && /(?:ничего|отдых|отдох|работ|полеж)/.test(normalize(clause));
+        const specialDacha=service.id==='dacha' && /(?:копа|гряд|огород|дач)/.test(normalize(clause)) && /(?:не\s+(?:хочу\s+)?копа|не\s+буду\s+копа)/.test(normalize(clause));
+        if(negative&&!specialRest&&!specialDacha&&strong) {excluded.add(service.id);continue;}
+        totals.set(service.id,(totals.get(service.id)||0)+strong*5+related*2);
+      }
+    }
+    const q=normalize(query);
+    // Phrase-level signals beat incidental words such as «работа», «один» and «дома».
+    const boost=(id,points)=>{if(!excluded.has(id))totals.set(id,(totals.get(id)||0)+points);};
+    if(/(?:ничего не дела|не хочу (?:работ|ничего)|от меня отстал|не трога|на диван|хочу отдых)/.test(q))boost('sofa',10);
+    if(/(?:лови[а-я]* рыб|рыб[а-я]* лови|рыб[а-я]* ловл)/.test(q))boost('fishing',8);
+    if(/(?:еще (?:одн[а-я]* )?(?:бой|катк)|последн[а-я]* (?:бой|катк))/.test(q))boost('battle',8);
+    if(/(?:пять|5) минут/.test(q))boost('nap',10);
+    if(/(?:не хочу|заставля|жен[а-я]* зов|тещ[а-я]* зов)[а-я ]*(?:копа|гряд|огород)/.test(q))boost('dacha',10);
+    if(/(?:нос[а-я]* с сандал|носк[а-я]* и сандал)/.test(q))boost('socks',10);
+    const important=tokens(query).filter(w=>w.length>2&&!stopwords.has(w));
+    for(const service of services) {
+      // Also support future catalogue titles without letting generic description words win.
+      if(domain[service.id])continue;
+      const words=tokens(`${service.title || ''} ${service.keywords || ''}`);
+      const hits=important.filter(word=>words.some(candidate=>word===candidate||(word.length>=5&&candidate.startsWith(word.slice(0,-2))))).length;
+      if(hits)totals.set(service.id,hits*4);
+    }
+    return services.map((service,index)=>({id:service.id,score:excluded.has(service.id)?0:(totals.get(service.id)||0),index})).filter(row=>row.score>=4).sort((a,b)=>b.score-a.score||a.index-b.index);
+  }
+  function serviceSuggestions(ids) {
+    return ids[0]==='certificate'?['Как проходит тест?', 'У меня уже есть удостоверение', 'Это официальный документ?']:['А сколько стоит?', 'Какие документы нужны?', 'Как оформить?'];
+  }
+  function respond(query, options) {
+    const opts=options || {};
+    const catalogue=Array.isArray(opts.services)?opts.services.filter(s=>s&&typeof s.id==='string'):Object.keys(defaults).map(id=>({id,title:defaults[id],category:domain[id].category}));
+    const available=new Set(catalogue.map(s=>s.id));
+    const names=new Map(catalogue.map(s=>[s.id,s.title||defaults[s.id]||s.id]));
+    const q=normalize(query).slice(0,1000);
+    const context=lastContext(opts.history,available);
+    const ranked=rank(query,catalogue);
+    const direct=ranked.filter(row=>row.score>=Math.max(4,(ranked[0]?.score||0)*.55)).slice(0,3).map(row=>row.id);
+    const selected=direct.length?direct:context;
+    const first=selected[0];
+    const serviceName=first?names.get(first):'';
+    const count=Number.isFinite(opts.applicationsCount)?Math.max(0,Math.floor(opts.applicationsCount)):0;
+    const actions={applications:{type:'applications',label:'Мои заявления'},documents:{type:'documents',label:'Мои документы'},quiz:{type:'quiz',label:'Пройти тест на скуфа'},catalog:{type:'catalog',label:'Все услуги'}};
+
+    if(!q) return response('Я Палыч, робот спокойной жизни. Опишите ситуацию своими словами — подберу услугу и объясню, как её оформить. Что порешаем?',[],[],commonSuggestions);
+    if(/(?:персональн|данн|приват|конфиденц|localstorage|local storage|где хран|удалить.*истори|сохраня[а-я]* переписк)/.test(q)) return response('Имя, удостоверение и заявления сохраняются в этом браузере. Формы не отправляют их на сервер. Удалить сохранённые данные можно внизу сайта: «Ваши данные». Для заявления хватит имени или прозвища.',[],[],['Где мои заявления?', 'Что нужно для оформления?', 'Показать услуги']);
+    if(/(?:это (?:правда )?госуслуг|государственн|официальн[а-я]* (?:документ|портал|сайт)|юридическ|законн[а-я]* сил|это законно|ты макс|робот макс)/.test(q)) return response('Скуфуслуги — мемный портал, а я его робот Палыч. Здесь выдаются шуточные разрешения и удостоверения. Для настоящих государственных услуг нужен официальный портал Госуслуг. А право на хороший отдых у вас уже есть.',[],[],commonSuggestions);
+    if(/(?:кто ты|как тебя зовут|что ты умеешь|что умеешь|ты бот|ты робот|помощь|что можешь)/.test(q)) return response('Я робот Палыч. Нахожу услуги по житейским вопросам: отдых, гараж, рыбалка, дача, мангал, игры и скуфский статус. Объясню стоимость, документы и порядок оформления. Напишите, что случилось — без канцелярита.',[],[actions.catalog],commonSuggestions);
+    if(/^(?:привет|здравствуй[а-я]*|здоров[а-я]*|добрый (?:день|вечер)|добр[а-я]* утро|палыч)[\s!]*$/.test(q))return response('Здорово! Палыч на связи. Располагайтесь и рассказывайте, какой вопрос порешаем.',[],[],commonSuggestions);
+    if(/^(?:спасибо|благодарю|спасибочки|понятно|ясно|отлично|круто|супер)[а-я\s]*$/.test(q))return response('Обращайтесь. Всё устроим без лишней суеты. А теперь можно и чайку.',[],[],['Хочу отдохнуть', 'Мои заявления', 'Что ещё есть?']);
+
+    const ordinal=q.match(/(?:перв(?:ый|ую|ое)|втор(?:ой|ую|ое)|трет(?:ий|ью|ье)|вариант (?:1|2|3)|^(?:1|2|3)$)/);
+    if(ordinal && context.length) {
+      const value=ordinal[0];const index=/втор|2/.test(value)?1:/трет|3/.test(value)?2:0;
+      const id=context[index];
+      if(id)return response(`Выбираем «${names.get(id)}». ${id==='certificate'?'Начните с короткого теста — удостоверение появится в документах.':'Откройте карточку ниже: укажите имя, дату и срок, затем подайте заявление.'}`,[id],[],serviceSuggestions([id]));
+      return response(`У меня было ${context.length} ${context.length===1?'предложение':'предложения'}. Уточните, что вам ближе — подберу другой вариант.`,context,[],['Хочу отдохнуть', 'На рыбалку или на дачу?', 'Все услуги']);
+    }
+    if(/^(?:да|ага|угу|конечно|давай|давайте|нет|неа|не надо|не хочу)$/.test(q))return response(/^н/.test(q)?'Понял, поищем другое. Какой отдых вам ближе?':'Уточним, чтобы оформить то, что нужно. Выберите вариант или опишите задачу чуть подробнее.',context,[],context.length===1?['Как оформить?', 'А сколько стоит?', 'Показать другие услуги']:commonSuggestions);
+
+    if(/(?:мои? заяв|мо[её] заяв|где.*заяв|статус.*(?:заяв|обращ)|(?:заявк|заявлен)[а-я]* (?:готов|одобр|принят)|проверить.*заяв|^заявления$)/.test(q))return response(count?`В этом браузере сохранено заявлений: ${count}. Посмотрите их в разделе «Заявления» — там есть номер, выбранная дата и статус диванной комиссии.`:'В этом браузере пока нет заявлений. Выберите услугу и заполните короткую форму. После отправки заявление появится в разделе «Заявления».',[],[actions.applications],['Как подать заявление?', 'Хочу отдохнуть', 'Где хранятся данные?']);
+    if(/(?:потерял[а-я]*.*(?:документ|удостовер)|где.*(?:удостовер|документ)|мои? документ|(?:скача|покаж)[а-я]*.*(?:удостовер|документ)|у меня уже есть удостоверение|^документы$)/.test(q))return response(opts.hasCertificate?'Ваше удостоверение доступно в разделе «Документы» этого браузера. Откройте его и нажмите «Скачать удостоверение».':'Удостоверение появляется после теста на скуфа. Если вы проходили тест в другом браузере или удалили данные сайта, здесь документа не будет — можно пройти тест заново.',[],[opts.hasCertificate?actions.documents:actions.quiz],['Как проходит тест?', 'Где хранятся данные?']);
+    if(/(?:сколько.*(?:стоит|плат|руб)|цен[ауы]|стоимост|платн|бесплатн|госпошлин|тариф)/.test(q))return response(`${serviceName?`Услуга «${serviceName}», как и остальные услуги портала, бесплатна.`:'Все услуги Скуфуслуг бесплатные.'} Оплата и банковская карта не нужны. Чай по желанию — из своих запасов.`,selected.slice(0,1),[],serviceSuggestions(selected).filter(s=>!s.includes('стоит')).concat('Показать все услуги'));
+    if(/(?:какие.*документ|что.*(?:нужно|нужны).*оформ|документ.*(?:нужн|требу)|нужен.*паспорт|справк.*нужн|что нужно для оформления)/.test(q))return response(first==='certificate'?'Для удостоверения достаточно ответить на пять вопросов теста. Реальные паспортные данные и фотографии документов не нужны. Имя или прозвище можно указать в личном кабинете.':'Для мемного заявления достаточно имени или прозвища, даты и желаемого срока. Прикладывать документы не нужно. Настоящие паспортные данные не вводите.',selected.slice(0,1),first==='certificate'?[actions.quiz]:[],['Как оформить?', 'А сколько стоит?', 'Где хранятся данные?']);
+    if(/(?:на сколько|срок действ|сколько.*действ|надолго|длительность|бессроч)/.test(q))return response(first==='certificate'?'Шуточное удостоверение скуфа бессрочное. Комфорт с годами только крепнет.':first?`Для «${serviceName}» в форме можно выбрать: «На весь день», «На пару часов» или «До особого распоряжения». Дату начала выбираете сами.`:'В заявлении можно выбрать весь день, пару часов или срок до особого распоряжения. Удостоверение скуфа бессрочное. О какой услуге речь?',selected.slice(0,1),[],first?['Как оформить?', 'А сколько стоит?']:['Разрешение на диван', 'Пропуск в гараж', 'Удостоверение скуфа']);
+    if(/(?:сколько времени|долго.*(?:оформ|ждат)|когда.*одобр|срок рассмотр|как быстро|сколько.*занима)/.test(q)) {
+      const service=catalogue.find(s=>s.id===first);
+      return response(first==='certificate'?'Тест состоит из пяти вопросов и занимает около двух минут. Удостоверение появляется сразу после результата.':`Заполнение ${service?.time?`занимает примерно ${service.time.toLowerCase()}`:'обычно занимает около минуты'}. После отправки мемное заявление сразу получает одобрение диванной комиссии.`,selected.slice(0,1),[],['Как оформить?', 'Какие документы нужны?']);
+    }
+    if(/(?:как.*(?:оформ|получ|подать)|что дальше|где оформ|хочу оформ|начать оформ|подай.*заяв|оформи.*заяв)/.test(q))return response(first==='certificate'?'Нажмите «Пройти тест на скуфа». Ответьте на пять вопросов — получите результат и сможете скачать удостоверение.':first?`Для «${serviceName}» откройте карточку ниже. Укажите имя, дату и срок, подтвердите право на комфорт и нажмите «Подать заявление». Потом найдёте его в разделе «Заявления».`:'Выберите услугу — откроется короткая форма с именем, датой и сроком. Я помогу найти нужную. Что будем оформлять?',selected.slice(0,1),first==='certificate'?[actions.quiz]:first?[]:[actions.catalog],first?['Какие документы нужны?', 'А сколько стоит?']:commonSuggestions);
+    if(/(?:как.*тест|как.*проходит|сколько.*вопрос|что за тест)/.test(q))return response('В тесте пять вопросов о комфорте: диван, инструменты, носки с сандалиями, игры и выходные. Неправильных ответов нет. В конце — ваш уровень скуфства и шуточное удостоверение.',available.has('certificate')?['certificate']:[],[actions.quiz],['А сколько стоит?', 'Где будет удостоверение?']);
+    if(/(?:что еще|другие услуги|показать.*услуг|все услуги|каталог|что есть|покажи услуги|услуги портала)/.test(q))return response('Есть услуги для дивана, гаража, рыбалки и дачи, мангала, игр и скуфского статуса. Выберите настроение — найду подходящее.',[],[actions.catalog],commonSuggestions);
+
+    if(/рыб/.test(q)&&/(?:дач|огород)/.test(q)&&/(?:или|не знаю|выбрать)/.test(q))return response('Два хороших направления. На рыбалку — согласование выезда, на дачу без лопаты — амнистия от огорода. Что выбираем?', ['fishing','dacha'].filter(id=>available.has(id)),[],['Согласовать рыбалку', 'На дачу и не копать']);
+    if(direct.length) {
+      // Two clear different intents are offered together; a weak secondary match is discarded.
+      if(direct.length>1 && /(?:или|либо|и еще|а еще)/.test(q))return response('Нашёл несколько вариантов. Выберите подходящий — дальше помогу с оформлением.',direct,[],['Первый вариант', 'Второй вариант', 'А сколько стоит?']);
+      const id=direct[0];
+      return response(copy[id]||`Подходит услуга «${names.get(id)}». Откройте карточку ниже, чтобы посмотреть и оформить.`,[id],id==='certificate'?[actions.quiz]:[],serviceSuggestions([id]));
+    }
+    if(/(?:отды|выходн|погуля|за город|природ)/.test(q))return response('Отдых бывает разный. Вам остаться на диване, выбраться на рыбалку или на дачу без огорода?',[],[],['Хочу полежать на диване', 'Хочу на рыбалку', 'На дачу и не копать']);
+    if(/(?:помоги|хочу|не знаю|посовет|дела|работ)/.test(q))return response('Давайте разберёмся без суеты. Вам нужно отдохнуть дома, выбраться из дома или подтвердить скуфский статус?',[],[],commonSuggestions);
+    return response('По этому вопросу у меня пока нет услуги. Я знаю про диван, гараж, рыбалку, дачу, мангал, игры и скуфские документы. Опишите одну из этих задач — подберу решение.',[],[actions.catalog],commonSuggestions);
+  }
+  return Object.freeze({respond});
+});

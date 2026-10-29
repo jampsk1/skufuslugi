@@ -116,8 +116,7 @@ function renderServices() {
 function renderNews(){ $('#newsGrid').innerHTML=news.map((n,i)=>`<button class="news-card" data-news="${i}"><span class="news-visual news-v${i+1}"><span class="news-visual-label">${n.label}</span><span class="news-illustration" aria-hidden="true">${n.emoji}</span><span class="news-visual-circle" aria-hidden="true"></span></span><span class="news-body"><span class="news-date">${n.date}</span><h3>${n.title}</h3><span>${n.description}</span><span class="news-read">Читать <span aria-hidden="true">→</span></span></span></button>`).join(''); }
 function resetSearch(){currentQuery='';currentCategory='all';currentFilter='all';$('#serviceSearch').value='';renderCategories();renderServices();}
 function goToCatalog(){closeModal();$('#catalog').scrollIntoView({behavior:'smooth',block:'start'});}
-$('#searchForm').addEventListener('submit',(event)=>{event.preventDefault();currentQuery=$('#serviceSearch').value;currentFilter='all';renderServices();goToCatalog();});
-$('#serviceSearch').addEventListener('input',()=>{currentQuery=$('#serviceSearch').value;currentFilter=currentQuery?'all':currentFilter;renderServices();});
+$('#searchForm').addEventListener('submit',(event)=>{event.preventDefault();showChat($('#serviceSearch').value.trim());});
 
 function showProfile() {
   if(!state.name) {
@@ -158,17 +157,41 @@ function downloadCertificate(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700"><rect width="1100" height="700" rx="32" fill="#f6f3e9"/><rect x="25" y="25" width="1050" height="650" rx="22" fill="none" stroke="#d5c9a7" stroke-width="2"/><path d="M70 90h40v90H70z" fill="#1259dd"/><path d="M110 90h40v90h-40z" fill="#ee4859"/><g font-family="Arial,sans-serif" fill="#17233f"><text x="180" y="126" font-size="31" font-weight="bold">скуфуслуги</text><text x="180" y="160" font-size="17" fill="#788297">ПОРТАЛ СПОКОЙНОЙ ЖИЗНИ</text><text x="70" y="260" font-size="21" letter-spacing="5">УДОСТОВЕРЕНИЕ СКУФА</text><path d="M70 290h960" stroke="#d5c9a7"/><text x="70" y="370" font-size="46" font-weight="bold">${certificateLevel(c.score)}</text><text x="70" y="436" font-size="32">${name}</text><text x="70" y="500" font-size="22" fill="#69758b">Уровень скуфства: ${c.score*10}% · Право на отдых: бессрочно</text><text x="70" y="575" font-size="18" fill="#69758b">№ ${escapeHtml(c.number)} · Выдано ${dateLabel(c.date)}</text><text x="70" y="630" font-size="16" fill="#8b8b8b">Шуточный документ. Действует на территории хорошего настроения.</text></g><circle cx="938" cy="126" r="55" fill="none" stroke="#1259dd" stroke-width="2"/><path d="m915 126 16 16 30-34" fill="none" stroke="#1259dd" stroke-width="6" stroke-linecap="round"/></svg>`;
   const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='udostoverenie-skufa.svg';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);toast('Удостоверение готово. Храните рядом с пультом.');
 }
-function showChat(){openModal('Скуфпомощник',`<div class="chat-agent"><span aria-hidden="true">🧔</span><div><strong>Палыч, диванный консультант</strong><small><span class="green-dot"></span> На месте. Чай допивает.</small></div></div><div class="chat-messages" id="chatMessages" aria-live="polite"><div class="chat-message">Здорово! Палыч на связи. Помогу найти услугу, разобраться с заявлением или оформить законный отдых. Что порешаем?</div></div><div class="chat-suggestions"><button data-chat="Хочу отдохнуть">Хочу отдохнуть</button><button data-chat="Мои заявления">Где заявление?</button><button data-chat="Удостоверение">Я точно скуф?</button></div><form class="chat-form" id="chatForm"><label class="sr-only" for="chatInput">Сообщение Палычу</label><input id="chatInput" placeholder="Спрашивайте, не стесняйтесь" maxlength="200" required autocomplete="off"><button class="button button-blue" aria-label="Отправить сообщение">↑</button></form>`,'chat-modal');}
-function chatReply(query){
+function palychAvatar(){return '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13V7" stroke="#1259dd" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="6" r="4" fill="#ee4859"/><rect x="7" y="16" width="50" height="40" rx="16" fill="#1259dd"/><rect x="13" y="22" width="38" height="27" rx="10" fill="#e9f3ff"/><rect x="2" y="29" width="5" height="14" rx="2.5" fill="#8bb9ff"/><rect x="57" y="29" width="5" height="14" rx="2.5" fill="#8bb9ff"/><path d="M21 31h6m10 0h6" stroke="#1259dd" stroke-width="3" stroke-linecap="round"/><path d="M32 38c-4-5-7-2-10 2 5 3 8 1 10-1 2 2 5 4 10 1-3-4-6-7-10-2Z" fill="#17233f"/><path d="M26 55v3m12-3v3" stroke="#1259dd" stroke-width="3" stroke-linecap="round"/></svg>';}
+let palychConversation=[];
+function palychWelcome(){return `<div class="palych-welcome"><div class="palych-welcome-icon">${palychAvatar()}</div><h3>Здорово! Я Палыч.</h3><p>Помогу найти услугу, разобраться с заявлением<br>и оформить заслуженный отдых. Что у вас?</p><div class="palych-welcome-prompts">${[
+  ['🛋️','Устал. Хочу полежать','Найти законный повод для отдыха','Устал на работе, хочу полежать'],
+  ['🎣','Собираюсь на рыбалку','Оформить выезд без лишних вопросов','Хочу с друзьями рыбу ловить'],
+  ['🪪','Я уже скуф?','Разобраться со статусом и документами','Как получить удостоверение скуфа?'],
+  ['📨','Где моё заявление?','Проверить, что решила комиссия','Где посмотреть мои заявления?']
+].map(([emoji,title,caption,query])=>`<button class="palych-prompt" data-chat="${escapeHtml(query)}"><span aria-hidden="true">${emoji}</span><span><strong>${title}</strong><small>${caption}</small></span><span aria-hidden="true">↗</span></button>`).join('')}</div></div>`;}
+function palychAction(action){
+  const attributes={applications:'data-nav="applications"',documents:'data-nav="documents"',quiz:'data-action="quiz"',catalog:'data-action="browse"',category:`data-category="${escapeHtml(action.category||'rest')}"`};
+  return attributes[action.type]?`<button class="button button-outline" ${attributes[action.type]}>${escapeHtml(action.label)} <span aria-hidden="true">→</span></button>`:'';
+}
+function renderPalychReply(reply){
+  const results=(reply.services||[]).map(id=>services.find(s=>s.id===id)).filter(Boolean);
+  return `<div class="palych-turn"><div class="chat-message palych-answer"><span class="palych-message-avatar">${palychAvatar()}</span><div class="palych-answer-content"><p>${escapeHtml(reply.text).replace(/\n/g,'<br>')}</p>${results.length?`<div class="palych-service-results">${results.map(s=>`<button class="palych-service-result" data-service="${s.id}"><span class="palych-result-emoji" aria-hidden="true">${s.emoji}</span><span><strong>${s.title}</strong><small>${s.time} · Бесплатно · Без очереди</small></span><span aria-hidden="true">→</span></button>`).join('')}</div>`:''}${reply.actions?.length?`<div class="palych-action-list">${reply.actions.map(palychAction).join('')}</div>`:''}${reply.suggestions?.length?`<div class="palych-reply-suggestions">${reply.suggestions.map(s=>`<button data-chat="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}</div>`:''}</div></div></div>`;
+}
+function renderPalychConversation(){
   const messages=$('#chatMessages');if(!messages)return;
-  messages.insertAdjacentHTML('beforeend',`<div class="chat-message user">${escapeHtml(query)}</div>`);
-  let reply;const q=query.toLowerCase();
-  if(/заявлен|статус заявки/.test(q)) reply=`Заявления на месте, ${state.applications.length?'все одобрены. Комиссия сегодня в хорошем настроении.':'пока ни одного. Начните с разрешения на отдых!'} <button class="text-link" data-nav="applications">Открыть заявления →</button>`;
-  else if(/привет|здравств|здоров/.test(q)) reply='И вам не хворать! Располагайтесь. Можно спросить про диван, рыбалку, гараж или удостоверение.';
-  else if(/спасиб/.test(q)) reply='Обращайтесь! А теперь можно и чайку. Вы заслужили.';
-  else if(/отдох|отдых|устал/.test(q)) reply='Для такого случая есть официальное диванное решение. <button class="text-link" data-service="sofa">Разрешение на ничего не делание →</button>';
-  else {const list=matchingServices(query);reply=list.length?`Вот что нашёл. Всё бесплатно, без лишних движений: ${list.slice(0,2).map(s=>`<button class="text-link chat-service" data-service="${s.id}">${s.emoji} ${s.title} →</button>`).join('')}`:'Тут надо подумать. Спросите про «диван», «рыбалку», «гараж» или «удостоверение» — по этим вопросам я специалист.';}
-  messages.insertAdjacentHTML('beforeend',`<div class="chat-message">${reply}</div>`);messages.scrollTop=messages.scrollHeight;
+  messages.innerHTML=palychConversation.length?palychConversation.map(entry=>entry.role==='user'?`<div class="palych-turn"><div class="chat-message user">${escapeHtml(entry.text)}</div></div>`:renderPalychReply(entry)).join(''):palychWelcome();
+  requestAnimationFrame(()=>{messages.scrollTop=messages.scrollHeight;});
+}
+function showChat(query=''){
+  openModal('Робот Палыч',`<div class="palych-shell"><div class="palych-toolbar"><span class="palych-avatar">${palychAvatar()}</span><div><strong>Ваш помощник по скуфским делам</strong><small><span class="green-dot"></span> Без очереди и лишних движений</small></div><button class="palych-reset" data-action="palych-reset" aria-label="Начать новый разговор с Палычем">Новый разговор <span aria-hidden="true">↻</span></button></div><div class="chat-messages palych-messages" id="chatMessages" role="log" aria-label="Разговор с Палычем" aria-live="polite" aria-relevant="additions"></div><div class="palych-compose"><form class="chat-form" id="chatForm"><label class="sr-only" for="chatInput">Сообщение Палычу</label><input id="chatInput" placeholder="Расскажите, что хотите порешать" maxlength="300" required autocomplete="off" autofocus><button class="button button-blue" type="submit" aria-label="Отправить сообщение Палычу"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form><p class="palych-compose-note">Палыч подбирает мемные услуги и помогает с порталом</p></div></div>`,'palych-modal');
+  renderPalychConversation();if(query)chatReply(query);
+}
+function chatReply(query){
+  query=String(query).trim().slice(0,300);if(!query)return;
+  if(!$('#chatMessages'))showChat();
+  const reply=window.PalychEngine.respond(query,{services,categories,history:palychConversation,applicationsCount:state.applications.length,hasCertificate:!!state.certificate});
+  palychConversation.push({role:'user',text:query},{role:'assistant',...reply});
+  if(palychConversation.length>40)palychConversation=palychConversation.slice(-40);
+  const messages=$('#chatMessages');
+  $('.palych-welcome',messages)?.remove();
+  messages.insertAdjacentHTML('beforeend',`<div class="palych-turn"><div class="chat-message user">${escapeHtml(query)}</div></div>${renderPalychReply(reply)}`);
+  requestAnimationFrame(()=>{messages.scrollTop=messages.scrollHeight;});
 }
 
 document.addEventListener('submit',(event)=>{
@@ -187,10 +210,10 @@ document.addEventListener('submit',(event)=>{
 document.addEventListener('input',event=>{if(event.target.matches('#profileName, #appName'))event.target.setCustomValidity('');});
 document.addEventListener('click',(event)=>{
   const target=event.target.closest('button');if(!target)return;
-  if(target.dataset.category){currentCategory=currentCategory===target.dataset.category?'all':target.dataset.category;currentFilter='all';renderCategories();renderServices();goToCatalog();}
+  if(target.dataset.category){currentCategory=modal.classList.contains('palych-modal')?target.dataset.category:currentCategory===target.dataset.category?'all':target.dataset.category;currentFilter='all';renderCategories();renderServices();goToCatalog();}
   if(target.dataset.filter){currentFilter=target.dataset.filter;renderServices();}
-  if(target.dataset.service){showService(target.dataset.service);}
-  if(target.dataset.search){$('#serviceSearch').value=target.dataset.search;currentQuery=target.dataset.search;currentCategory='all';currentFilter='all';renderCategories();renderServices();goToCatalog();}
+  if(target.dataset.service){const fromPalych=modal.classList.contains('palych-modal');showService(target.dataset.service);if(fromPalych&&target.dataset.service!=='certificate')body.insertAdjacentHTML('afterbegin','<button class="text-link palych-return" data-action="chat">← К разговору с Палычем</button>');}
+  if(target.dataset.search){$('#serviceSearch').value=target.dataset.search;showChat(target.dataset.search);}
   if(target.dataset.news!==undefined){const n=news[Number(target.dataset.news)];openModal('Вести с дивана',`<div class="article-emoji" aria-hidden="true">${n.emoji}</div><span class="news-date">${n.date} · Диванная редакция</span><h3 class="article-title">${n.title}</h3><p class="article-text">${n.body}</p><p class="form-note">Новость из мемной вселенной Скуфуслуг.</p><button class="button button-blue button-full" data-service="${n.service}">Перейти к услуге →</button>`);}
   if(target.dataset.application)showApplication(target.dataset.application);
   if(target.dataset.answer!==undefined){quizAnswers.push(Number(target.dataset.answer));showQuizQuestion();}
@@ -204,6 +227,7 @@ document.addEventListener('click',(event)=>{
     case 'all-services':case 'browse':resetSearch();goToCatalog();break;
     case 'reset-search':resetSearch();break;
     case 'chat':showChat();break;
+    case 'palych-reset':palychConversation=[];renderPalychConversation();$('#chatInput').value='';$('#chatInput').focus();break;
     case 'close':closeModal();break;
     case 'menu':{const open=$('#mainNav').classList.toggle('open');target.setAttribute('aria-expanded',String(open));break;}
     case 'logout':state.name='';persist();syncProfile();closeModal();toast('До скорого. Ваш диван будет ждать.');break;
@@ -211,7 +235,8 @@ document.addEventListener('click',(event)=>{
     case 'about':openModal('О Скуфуслугах',`<span class="modal-illustration" aria-hidden="true">🛋️</span><h3 class="article-title">Государство души. Территория комфорта.</h3><p class="article-text">Скуфуслуги — добрый мемный портал для тех, кто ценит диван, чай, гараж и право ничего не доказывать. Здесь можно пройти тест, получить шуточное удостоверение и оформить заслуженный отдых.</p><p class="article-text">Скуф — это состояние души. Пол, возраст и наличие усов не имеют значения.</p><p class="form-note">Развлекательный проект. Не связан с Госуслугами, государственными органами или настоящими государственными услугами. Все заявления и документы шуточные.</p>`);break;
     case 'privacy':openModal('Ваши данные — ваши дела',`<h3 class="article-title">Всё остаётся на вашем диване.</h3><p class="article-text">Имя, выбранный округ, результаты теста и заявления хранятся в локальном хранилище этого браузера. Формы не отправляют эти данные на сервер. После очистки данных сайта история исчезнет.</p><p class="article-text">Не указывайте настоящие паспортные данные, пароли и другую личную информацию. Для развлечения достаточно прозвища.</p><p class="article-text">Шрифт загружается с Google Fonts. Как и при посещении любого сайта, хостинг обрабатывает технические данные соединения.</p><button class="button button-outline button-full" data-action="clear-data">Удалить мои данные из браузера</button>`);break;
     case 'clear-data':openModal('Удаление данных',`<p class="modal-lead">Будут удалены имя, история заявлений и удостоверение в этом браузере.</p><button class="button button-blue button-full" data-action="confirm-clear">Да, начать с чистого дивана</button><button class="button button-outline button-full result-secondary" data-action="profile">Сохранить мои данные</button>`);break;
-    case 'confirm-clear':state={name:'',region:'Диванный округ',applications:[],certificate:null};persist();syncProfile();closeModal();toast('Локальные данные удалены. Можно начать заново.');break;
+    case 'confirm-clear':state={name:'',region:'Диванный округ',applications:[],certificate:null};palychConversation=[];persist();syncProfile();closeModal();toast('Локальные данные удалены. Можно начать заново.');break;
   }
 });
 renderCategories();renderServices();renderNews();syncProfile();
+$$('[data-palych-avatar]').forEach(el=>{el.innerHTML=palychAvatar();});
