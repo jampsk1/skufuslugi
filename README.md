@@ -10,7 +10,8 @@
 
 ## Возможности
 
-- Поиск через робота Палыча: бытовые фразы, уточнения в контексте разговора и карточки подходящих услуг. 7 категорий, 18 услуг.
+- Поиск через робота Палыча: бытовые фразы, уточнения в контексте разговора и карточки подходящих услуг. 7 категорий, 19 услуг.
+- Карусель на главной: тот же скуф на диване, в бане и в гараже. Стрелки, выбор сцены, пауза, свайпы и поддержка reduced-motion.
 - «Альтушки и знакомства»: скуфквота, свидание, концерт, плейлисты, новый образ и примирение. Отдельные формы с датой и форматом встречи, история мемных заявок.
 - Личный кабинет с именем и выбором округа.
 - Подача мемных заявлений и просмотр истории.
@@ -27,5 +28,7 @@
 Модуль `dist/palych.js` отвечает за подбор услуг и контекст; представление диалога находится в `dist/app.js` и `dist/palych.css`.
 
 ## Иллюстрация
+
+Карусель использует три иллюстрации: `dist/assets/hero-skuf.png`, `dist/assets/hero-banya.png` и `dist/assets/hero-garage.png`. Две новые сцены созданы встроенным ImageGen с оригиналом как референсом персонажа и стиля. Полные промпты сохранены в `IMAGE-PROMPTS.txt`.
 
 `dist/assets/hero-skuf.png` создана встроенным ImageGen для этого проекта. Промпт: «A polished friendly 3D clay-render cutout of a contented slightly chubby middle-aged man with a receding hairline and moustache, wearing a white tank top, navy shorts, white socks and slippers, relaxing on a warm orange sofa with a tea mug and a sleeping cat. Soft studio lighting, tactile materials, transparent background, no text or logos.»

@@ -17,8 +17,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;750;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="palych.css">
+  <link rel="stylesheet" href="hero-carousel.css">
   <script src="palych.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="hero-carousel.js" defer></script>
 </head>
 <body>
   <a class="skip-link sr-only" href="#catalog">Перейти к услугам</a>
@@ -44,9 +46,11 @@
   <main class="container">
     <section class="page-intro" aria-labelledby="welcomeTitle"><div><p class="eyebrow">ДЛЯ ТЕХ, КТО УЖЕ ВСЁ ПОНЯЛ</p><h1 id="welcomeTitle">Взрослая жизнь. На расслабоне.</h1></div><p class="intro-note">Ваш комфорт —<br>наша главная забота</p></section>
     <section class="hero-grid" aria-label="Добро пожаловать">
-      <div class="hero-card">
-        <div class="hero-copy"><span class="hero-label"><span class="green-dot"></span> Всё решается с дивана</span><h2>Дела подождут.<br>Скуфство — нет.</h2><p>Оформляйте важное, получайте положенное.<br>Тапочки снимать не обязательно.</p><button class="button button-blue" data-action="quiz">Подтвердить скуфство <span aria-hidden="true">↗</span></button><span class="hero-note">2 минуты · без очереди и осуждения</span></div>
-        <div class="hero-art"><img class="hero-illustration" src="assets/hero-skuf.png" alt="Довольный скуф отдыхает на оранжевом диване с кружкой чая и спящим котом" fetchpriority="high"><div class="hero-stamp"><span>✓</span><div>Право на отдых<strong>Подтверждено жизнью</strong></div></div></div>
+      <div class="hero-card hero-carousel" id="heroCarousel" role="region" aria-roledescription="карусель" aria-label="Скуфский отдых" tabindex="-1" data-slide="0">
+        <div class="hero-copy"><span class="hero-label"><span class="green-dot"></span><span id="heroSlideLabel">Всё решается с дивана</span></span><h2 id="heroSlideTitle">Дела подождут.<br>Скуфство — нет.</h2><p id="heroSlideDescription">Оформляйте важное, получайте положенное.<br>Тапочки снимать не обязательно.</p><button class="button button-blue" id="heroSlideAction" data-action="quiz">Подтвердить скуфство <span aria-hidden="true">↗</span></button><span class="hero-note" id="heroSlideNote">2 минуты · без очереди и осуждения</span></div>
+        <div class="hero-art"><img class="hero-illustration" id="heroSlideImage" src="assets/hero-skuf.png" width="1536" height="1024" alt="Довольный скуф отдыхает на оранжевом диване с кружкой чая и спящим котом" fetchpriority="high"><div class="hero-stamp"><span>✓</span><div><span id="heroStampTitle">Право на отдых</span><strong id="heroStampSubtitle">Подтверждено жизнью</strong></div></div></div>
+        <div class="hero-carousel-controls"><div class="hero-carousel-dots" role="group" aria-label="Выбор сцены"><button class="hero-carousel-dot" type="button" data-hero-slide="0" aria-label="Слайд 1: На диване" aria-pressed="true"></button><button class="hero-carousel-dot" type="button" data-hero-slide="1" aria-label="Слайд 2: В бане" aria-pressed="false"></button><button class="hero-carousel-dot" type="button" data-hero-slide="2" aria-label="Слайд 3: В гараже" aria-pressed="false"></button></div><div class="hero-carousel-navigation"><button type="button" data-hero-prev aria-label="Предыдущий слайд">←</button><button type="button" data-hero-pause aria-label="Остановить автопрокрутку" aria-pressed="false">Ⅱ</button><button type="button" data-hero-next aria-label="Следующий слайд">→</button></div></div>
+        <p class="sr-only" id="heroSlideStatus" aria-live="polite" aria-atomic="true"></p>
       </div>
       <aside class="profile-card"><div class="profile-icon" aria-hidden="true">🪪</div><span class="profile-kicker">ЛИЧНЫЙ КАБИНЕТ</span><h3 id="profileTitle">Свой человек?<br>Заходите.</h3><p id="profileDescription">Ваши заявления, документы<br>и заслуженные привилегии.</p><button class="button button-outline" data-action="profile" id="profileButton">Войти по-скуфски <span aria-hidden="true">→</span></button><div class="profile-footer"><svg width="15" height="17" viewBox="0 0 20 22" fill="none" aria-hidden="true"><path d="M3 4 10 1l7 3v7c0 5-7 9-7 9s-7-4-7-9V4Z" stroke="currentColor" stroke-width="1.6"/><path d="m6.5 10 2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.6"/></svg> Соседи ничего не узнают</div></aside>
     </section>
